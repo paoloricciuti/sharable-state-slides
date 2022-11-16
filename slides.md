@@ -35,7 +35,7 @@ defaults:
 
 ---
 layout: cover
-background: ./share.jpg
+background: /share.jpg
 title: Share?
 class: text-center
 ---
@@ -48,11 +48,12 @@ class: text-center
 ---
 title: URL
 ---
-<div class="grid place-items-center h-full">
+<div class="grid place-items-center h-full gap-8">
 <p class="text-center text-3xl w-full bg-white text-black block p-3 rounded-lg relative"><mdi-lock class="absolute left-1 top-1/2 -translate-y-1/2 transform"/><span class="relative">https<url-popover v-click >protocol</url-popover></span>://<span class="relative">youtube<url-popover v-click >domain</url-popover></span><span class="relative">.com<url-popover v-click >gTLD</url-popover>/</span><span class="relative">watch<url-popover v-click >path</url-popover></span>?<span class="relative">v=dQw4w9WgXcQ<url-popover v-click>query parameter</url-popover></span><span class="relative">#wink<url-popover v-click >hash</url-popover></span></p>
+<a class="max-w-100 outline outline-offset-[1rem]" href="https://www.youtube.com/watch?v=0uejy9aCNbI">
+<img src="/thumbnail.jpg" alt="youbtube thumbnail for live overflow video" />
+</a>
 </div>
-
-<img src="/qr.png" alt="qr code for link" class="absolute top-7 w-40 transform rotate-15 right-7 outline outline-offset-[1rem]" />
 
 <!--
 protocols: http, https, ftp, file
@@ -102,7 +103,7 @@ console.log(searchParams.toString()); // "v=dQw4w9WgXcQ&userId=1234&noValue=&set
 <!--They are all strings, nonpresent return null, present without value return empty string-->
 ---
 layout: image-left
-image: https://media.giphy.com/media/xT8qBdemIGlrdIEr1S/giphy.gif
+image: /lift.gif
 ---
 
 # Why lift the state up to the url?
@@ -292,7 +293,7 @@ $: username = $page.url.searchParams.get("username");
 <input value={username} on:input={(e)=>{
     const oldQuery=new URLSearchParams($page.url.search);
     oldQuery.set("username", e.target.value);
-    goto(`?${oldQuery.toString()}`);
+    goto(`?${oldQuery.toString()}`, { keepFocus: true, noScroll: true });
 }} />
 ```
 </do-or-dont>
@@ -311,7 +312,7 @@ $: username = $page.url.searchParams.get("username");
 ---
 title: Drumroll
 layout: cover
-background: https://media.giphy.com/media/GBvkxysAR8Svm/giphy.gif
+background: /drumroll.gif
 ---
 
 <h1 class="text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-800">DRUM ROLL!</h1>
@@ -319,7 +320,7 @@ background: https://media.giphy.com/media/GBvkxysAR8Svm/giphy.gif
 ---
 layout: cover
 title: Presenting sveltekit-search-params
-background: https://media.giphy.com/media/PMV7yRpwGO5y9p3DBx/giphy.gif
+background: /confetti.gif
 ---
 
 <h1 class="text-center">
@@ -436,9 +437,9 @@ There are six helpers all exported as functions on the object ssp.
 To map from a query parameter to an object. An url like this `/?obj={"isComplex":%20true,%20"nested":%20{"field":%20"value"}}` will be mapped to
 
 ```typescript
-$store.obj.isComplex; //true
-$store.obj.nested; // {field: "value"}
-$store.obj.nested.value; // "value"
+$obj.isComplex; //true
+$obj.nested; // {field: "value"}
+$obj.nested.value; // "value"
 ```
 
 <v-click>
@@ -448,10 +449,10 @@ $store.obj.nested.value; // "value"
 To map from a query parameter to an array. An url like this `/?arr=[1,2,3,4]` will be mapped to
 
 ```typescript
-$store.arr[0]; //1
-$store.arr[1]; //2
-$store.arr[2]; //3
-$store.arr[3]; //4
+$arr[0]; //1
+$arr[1]; //2
+$arr[2]; //3
+$arr[3]; //4
 ```
 </v-click>
 
@@ -465,7 +466,7 @@ $store.arr[3]; //4
 To map from a query parameter to a number. An url like this `/?num=1` will be mapped to
 
 ```typescript
-$store.num; //1
+$num; //1
 ```
 <v-click>
 
@@ -474,13 +475,13 @@ $store.num; //1
 To map from a query parameter to a boolean. An url like this `/?bool=true` will be mapped to
 
 ```typescript
-$store.bool; //true
+$bool; //true
 ```
 
 an url like this `/?bool=false` will be mapped to
 
 ```typescript
-$store.bool; //false
+$bool; //false
 ```
 
 just like an url like this `/`
@@ -503,7 +504,7 @@ To map any JSON serializable state to his lz-string representation. This is a co
 An url like this `/?state=N4IgbghgNgrgpiAXCAsgTwAQGMD2OoYCO8ATpgA4QkQC2cALnCSAL5A` will map to
 
 ```typescript
-$store.state.value; //My cool query parameter
+$state.value; //My cool query parameter
 ```
 </v-click>
 
@@ -541,5 +542,5 @@ const params = queryParameters({
 
 ---
 layout: image
-image: https://media.giphy.com/media/UqxVRm1IaaIGk/giphy.gif
+image: /coding.gif
 ---
