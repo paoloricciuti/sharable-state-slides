@@ -3,6 +3,8 @@ record: true
 title: 'Init'
 titleTemplate: 'Sharable state - sveltekit-search-params'
 favicon: /favicon.svg
+highlighter: shiki
+colorSchema: 'dark'
 defaults:
     theme: default
     class: to-slate-800 text-slate-100 bg-gradient-to-br from-slate-900
@@ -49,6 +51,8 @@ title: URL
 <div class="grid place-items-center h-full">
 <p class="text-center text-3xl w-full bg-white text-black block p-3 rounded-lg relative"><mdi-lock class="absolute left-1 top-1/2 -translate-y-1/2 transform"/><span class="relative">https<url-popover v-click >protocol</url-popover></span>://<span class="relative">youtube<url-popover v-click >domain</url-popover></span><span class="relative">.com<url-popover v-click >gTLD</url-popover>/</span><span class="relative">watch<url-popover v-click >path</url-popover></span>?<span class="relative">v=dQw4w9WgXcQ<url-popover v-click>query parameter</url-popover></span><span class="relative">#wink<url-popover v-click >hash</url-popover></span></p>
 </div>
+
+<img src="/qr.png" alt="qr code for link" class="absolute top-7 w-40 transform rotate-15 right-7 outline outline-offset-[1rem]" />
 
 <!--
 protocols: http, https, ftp, file
@@ -138,7 +142,7 @@ SvelteKit developers are not joke so we actually have a reactive version of the 
 
 <v-click>
 
-```typescript
+```svelte
 <script>
 import { page } from "$app/stores";
 </script>
@@ -152,7 +156,7 @@ import { page } from "$app/stores";
 
 <do-or-dont>
 
-```typescript
+```svelte
 <script>
 import { page } from "$app/stores";
 let username = $page.url.searchParams.get("username");
@@ -165,7 +169,7 @@ let username = $page.url.searchParams.get("username");
 <v-click>
 <do-or-dont do>
 
-```typescript
+```svelte
 <script>
 import { page } from "$app/stores";
 </script>
@@ -178,7 +182,7 @@ import { page } from "$app/stores";
 <v-click>
 <do-or-dont do>
 
-```typescript
+```svelte
 <script>
 import { page } from "$app/stores";
 $: username = $page.url.searchParams.get("username");
@@ -197,7 +201,7 @@ $: username = $page.url.searchParams.get("username");
 <div class="flex flex-col justify-evenly h-full">
 <do-or-dont>
 
-```typescript
+```svelte
 <script>
 import { page } from "$app/stores";
 import { goto } from "$app/navigation";
@@ -213,7 +217,7 @@ import { goto } from "$app/navigation";
 <v-click>
 <do-or-dont>
 
-```typescript
+```svelte
 <script>
 import { page } from "$app/stores";
 import { goto } from "$app/navigation";
@@ -238,7 +242,7 @@ import { goto } from "$app/navigation";
 <div class="flex flex-col justify-evenly h-full">
 <do-or-dont>
 
-```typescript
+```svelte
 <script>
 import { page } from "$app/stores";
 import { goto } from "$app/navigation";
@@ -256,7 +260,7 @@ import { goto } from "$app/navigation";
 <v-click>
 <do-or-dont>
 
-```typescript
+```svelte
 <script>
 import { page } from "$app/stores";
 import { goto } from "$app/navigation";
@@ -277,7 +281,7 @@ $: username = $page.url.searchParams.get("username");
 
 <do-or-dont do>
 
-```typescript
+```svelte
 <script>
 import { page } from "$app/stores";
 import { goto } from "$app/navigation";
@@ -320,3 +324,222 @@ background: https://media.giphy.com/media/PMV7yRpwGO5y9p3DBx/giphy.gif
 
 <h1 class="text-center">
 Presenting<br /><code>sveltekit-search-params</code><br />🎉🎉🎉</h1>
+---
+
+# What is sveltekit-search-params?
+
+The easiest way to read an WRITE to the query params
+
+- <twemoji-gear /> Customizable
+- <logos-svelte-icon /> Reactive
+- <twemoji-man-technologist /> Dev friendly
+- <logos-typescript-icon /> Built with Typescript in mind
+
+---
+
+# How to use it?
+Installation and usage
+
+Simply install with 
+
+`npm install sveltekit-search-params -D`
+
+<v-click>
+
+update your `vite.config.js` to include the ssp plugin
+
+```typescript
+import { sveltekit } from "@sveltejs/kit/vite";
+import { ssp } from "sveltekit-search-params/plugin";
+
+/** @type {import('vite').UserConfig} */
+const config = {
+    plugins: [ssp(), sveltekit()],
+};
+
+export default config;
+```
+</v-click>
+---
+
+# How to use it? - Simple use case
+
+```typescript
+<script lang="ts">
+import { queryParam } from "sveltekit-search-params";
+//username is of type string
+const username = queryParam("username"); 
+</script>
+
+<input bind:value={$username} />
+<hr />
+Username: {$username}
+```
+<v-click>
+
+```typescript
+<script lang="ts">
+import { queryParam } from "sveltekit-search-params";
+//username is of type number
+const count = queryParam("count", {
+    encode: (value: number) => value.toString(),
+    decode: (value: string | null) => value ? parseInt(value) : null,
+});
+</script>
+
+<button on:click={()=>{
+    $count++;
+}}>Count: {$count}</button>
+```
+</v-click>
+
+---
+
+# How to use it? - Encode/Decode helpers
+
+```typescript
+<script lang="ts">
+import { ssp ,queryParam } from "sveltekit-search-params";
+//isPresent is of type boolean
+const isPresent = queryParam("isPresent", ssp.boolean()); 
+</script>
+
+<input type="checkbox" bind:checked={$isPresent} /> {$isPresent.toString()}
+```
+<v-click>
+
+```typescript
+<script lang="ts">
+import { ssp ,queryParam } from "sveltekit-search-params";
+//user is of type {name: string, last_name: string}
+const user = queryParam("user", ssp.object<{name: string, last_name: string}>());
+//$user. <- this will get autocompleted with name and last_name
+</script>
+
+{JSON.stringify($user)}
+<hr />
+{#if $user}
+    <input bind:value={$user.name} />
+    <input bind:value={$user.last_name} />
+{/if}
+```
+</v-click>
+
+---
+
+# ssp - Helpers
+
+There are six helpers all exported as functions on the object ssp.
+
+#### object
+
+To map from a query parameter to an object. An url like this `/?obj={"isComplex":%20true,%20"nested":%20{"field":%20"value"}}` will be mapped to
+
+```typescript
+$store.obj.isComplex; //true
+$store.obj.nested; // {field: "value"}
+$store.obj.nested.value; // "value"
+```
+
+<v-click>
+
+#### array
+
+To map from a query parameter to an array. An url like this `/?arr=[1,2,3,4]` will be mapped to
+
+```typescript
+$store.arr[0]; //1
+$store.arr[1]; //2
+$store.arr[2]; //3
+$store.arr[3]; //4
+```
+</v-click>
+
+---
+
+# ssp - Helpers
+
+
+#### number
+
+To map from a query parameter to a number. An url like this `/?num=1` will be mapped to
+
+```typescript
+$store.num; //1
+```
+<v-click>
+
+#### boolean
+
+To map from a query parameter to a boolean. An url like this `/?bool=true` will be mapped to
+
+```typescript
+$store.bool; //true
+```
+
+an url like this `/?bool=false` will be mapped to
+
+```typescript
+$store.bool; //false
+```
+
+just like an url like this `/`
+
+</v-click>
+---
+
+# ssp - Helpers
+
+#### string
+
+This is exported mainly for readability since all query parameters are already strings.
+
+<v-click>
+
+#### lz
+
+To map any JSON serializable state to his lz-string representation. This is a common way to store state in query parameters that will prevent the link to directly show the state.
+
+An url like this `/?state=N4IgbghgNgrgpiAXCAsgTwAQGMD2OoYCO8ATpgA4QkQC2cALnCSAL5A` will map to
+
+```typescript
+$store.state.value; //My cool query parameter
+```
+</v-click>
+
+---
+
+# Multiple query Parameters
+
+You can also use the exported function `queryParameters` that takes an object in which the keys are the expected query parameters. This will return an object in which every key will either be the query parameter or null if the query parameter is not present. In the object there will also be every existent query parameter.
+
+```typescript
+<script lang="ts">
+import { queryParameters } from "sveltekit-search-params";
+const params = queryParameters({
+    username: true,
+});
+//$params. <- will autocomplete with username of type string but you can
+//also access every other query parameter present as string
+</script>
+```
+
+<v-click>
+
+```typescript
+<script lang="ts">
+import { ssp , queryParameters } from "sveltekit-search-params";
+const params = queryParameters({
+    isPresent: ssp.boolean(),
+});
+//$params. <- will autocomplete with isPresent of type boolean but you can
+//also access every other query parameter present as string
+</script>
+```
+
+</v-click>
+
+---
+layout: image
+image: https://media.giphy.com/media/UqxVRm1IaaIGk/giphy.gif
+---
