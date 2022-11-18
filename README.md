@@ -4,7 +4,7 @@ This is the repository that contains the slides for the talk "Sharable state"
 
 You can see a live demo of this repository at https://sharable-state-slides.netlify.app
 
-The slideshow include a live coding session. The resulting code can be found in [this branch](https://github.com/paoloricciuti/sharable-state-slides/tree/example-resolved/example)
+The slideshow include a live coding session. The resulting code can be found in [this branch](https://github.com/paoloricciuti/sharable-state-slides/tree/example-resolved/example) and another solution to [this branch](https://github.com/paoloricciuti/sharable-state-slides/tree/example-resolved-lz/example)
 
 To start the slide show:
 
