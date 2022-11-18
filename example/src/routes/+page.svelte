@@ -6,7 +6,7 @@
   let search = "";
   let selectedId: number | null = null;
   let showVideo = false;
-  let sort: string = "title";
+  let sort: string = "";
   $: videos = data.videos
     .filter((video) => video.title.toLowerCase().includes(search.toLowerCase()))
     .sort((videoA, videoB) => {
@@ -16,7 +16,7 @@
       }
       return 0;
     });
-  $: selectedVideo = videos.find((video) => video.id === $selectedId);
+  $: selectedVideo = videos.find((video) => video.id === selectedId);
 </script>
 
 <h1>Awesome Svelte videos!</h1>
@@ -99,34 +99,34 @@
     selectedId = null;
   }}
 >
-<div class="modal-details">
+  <div class="modal-details">
     <p>Title:</p>
     <p>{selectedVideo?.title}</p>
     <p>Channel:</p>
     <p>{selectedVideo?.channel}</p>
     <button
-    on:click={() => {
+      on:click={() => {
         showVideo = !showVideo;
-    }}
+      }}
     >
-    {#if showVideo}
+      {#if showVideo}
         Hide video
-    {:else}
+      {:else}
         Show video
-    {/if}
+      {/if}
     </button>
     <div class="video-zone">
-    {#if showVideo}
+      {#if showVideo}
         <iframe
-        src={selectedVideo?.url}
-        title="YouTube video player"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen
+          src={selectedVideo?.url}
+          title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
         />
-    {/if}
+      {/if}
     </div>
-</div>
+  </div>
 </Modal>
 
 <style>
