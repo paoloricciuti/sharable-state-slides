@@ -16,6 +16,7 @@
       }
       return 0;
     });
+  $: selectedVideo = videos.find((video) => video.id === $selectedId);
 </script>
 
 <h1>Awesome Svelte videos!</h1>
@@ -98,36 +99,34 @@
     selectedId = null;
   }}
 >
-  {#if selectedId !== null && videos[selectedId]}
-    <div class="modal-details">
-      <p>Title:</p>
-      <p>{videos[selectedId].title}</p>
-      <p>Channel:</p>
-      <p>{videos[selectedId].channel}</p>
-      <button
-        on:click={() => {
-          showVideo = !showVideo;
-        }}
-      >
-        {#if showVideo}
-          Hide video
-        {:else}
-          Show video
-        {/if}
-      </button>
-      <div class="video-zone">
-        {#if showVideo}
-          <iframe
-            src={videos[selectedId].url}
-            title="YouTube video player"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          />
-        {/if}
-      </div>
+<div class="modal-details">
+    <p>Title:</p>
+    <p>{selectedVideo?.title}</p>
+    <p>Channel:</p>
+    <p>{selectedVideo?.channel}</p>
+    <button
+    on:click={() => {
+        showVideo = !showVideo;
+    }}
+    >
+    {#if showVideo}
+        Hide video
+    {:else}
+        Show video
+    {/if}
+    </button>
+    <div class="video-zone">
+    {#if showVideo}
+        <iframe
+        src={selectedVideo?.url}
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        />
+    {/if}
     </div>
-  {/if}
+</div>
 </Modal>
 
 <style>
