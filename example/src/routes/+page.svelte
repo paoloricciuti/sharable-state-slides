@@ -2,137 +2,154 @@
   import Modal from "../lib/components/Modal.svelte";
   import type { PageData } from "./$types";
   import { ssp, queryParam } from "sveltekit-search-params";
+  import { onMount } from "svelte";
 
   export let data: PageData;
-
-  let search = queryParam("search");
-  let selectedId = queryParam("selectedId", ssp.number());
-  let showVideo = queryParam("showVideo", ssp.boolean());
-  let sort = queryParam("title");
+  type State = {
+    search: string;
+    selectedId: number | null;
+    showVideo: boolean;
+    sort: string;
+  };
+  let state = queryParam("state", ssp.lz<State>());
   $: videos = data.videos
     .filter((video) =>
-      video.title.toLowerCase().includes($search?.toLowerCase() ?? "")
+      video.title.toLowerCase().includes($state?.search?.toLowerCase() ?? "")
     )
     .sort((videoA, videoB) => {
-      const [key, desc] = $sort?.split(":") ?? "title";
+      const [key, desc] = $state?.sort?.split(":") ?? "title";
       if (key === "title" || key === "channel") {
         return videoA[key].localeCompare(videoB[key]) * (!!desc ? -1 : 1);
       }
       return 0;
     });
-  $: selectedVideo = videos.find((video) => video.id === $selectedId);
+  $: selectedVideo = videos.find((video) => video.id === $state?.selectedId);
+
+  onMount(() => {
+    if (!$state) {
+      $state = {
+        search: "",
+        showVideo: false,
+        sort: "",
+        selectedId: null,
+      };
+    }
+  });
 </script>
 
 <h1>Awesome Svelte videos!</h1>
-
-<section>
-  <input bind:value={$search} type="search" placeholder="search..." />
-  <table>
-    <thead>
-      <th
-        ><button
-          on:click={() => {
-            if ($sort?.startsWith("title")) {
-              if ($sort === "title") {
-                $sort = "title:desc";
+{#if $state}
+  <section>
+    <input bind:value={$state.search} type="search" placeholder="search..." />
+    <table>
+      <thead>
+        <th
+          ><button
+            on:click={() => {
+              if ($state?.sort?.startsWith("title")) {
+                if ($state?.sort === "title") {
+                  $state.sort = "title:desc";
+                } else {
+                  $state.sort = "title";
+                }
               } else {
-                $sort = "title";
+                if ($state) $state.sort = "title";
               }
-            } else {
-              $sort = "title";
-            }
-          }}
-          >Title
-          {#if $sort?.startsWith("title")}
-            {#if $sort === "title"}
-              🔼
-            {:else}
-              🔽
+            }}
+            >Title
+            {#if $state?.sort?.startsWith("title")}
+              {#if $state?.sort === "title"}
+                🔼
+              {:else}
+                🔽
+              {/if}
             {/if}
-          {/if}
-        </button></th
-      >
-      <th
-        ><button
-          on:click={() => {
-            if ($sort?.startsWith("channel")) {
-              if ($sort === "channel") {
-                $sort = "channel:desc";
+          </button></th
+        >
+        <th
+          ><button
+            on:click={() => {
+              if ($state?.sort?.startsWith("channel")) {
+                if ($state?.sort === "channel") {
+                  $state.sort = "channel:desc";
+                } else {
+                  $state.sort = "channel";
+                }
               } else {
-                $sort = "channel";
+                if ($state) $state.sort = "channel";
               }
-            } else {
-              $sort = "channel";
-            }
-          }}
-          >Channel
-          {#if $sort?.startsWith("channel")}
-            {#if $sort === "channel"}
-              🔼
-            {:else}
-              🔽
+            }}
+            >Channel
+            {#if $state?.sort?.startsWith("channel")}
+              {#if $state?.sort === "channel"}
+                🔼
+              {:else}
+                🔽
+              {/if}
             {/if}
-          {/if}
-        </button></th
+          </button></th
+        >
+      </thead>
+      <tbody>
+        {#each videos as video}
+          <tr>
+            <td>
+              <button
+                on:click={() => {
+                  if ($state) $state.selectedId = video.id;
+                }}
+              >
+                {video.title}
+              </button>
+            </td>
+            <td>
+              {video.channel}
+            </td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  </section>
+  <Modal
+    open={$state.selectedId !== null}
+    on:close={async () => {
+      if ($state) {
+        $state.showVideo = false;
+        $state.selectedId = null;
+      }
+    }}
+  >
+    <div class="modal-details">
+      <p>Title:</p>
+      <p>{selectedVideo?.title}</p>
+      <p>Channel name:</p>
+      <p>{selectedVideo?.channel}</p>
+      <button
+        style="text-align: start;"
+        on:click={() => {
+          if ($state) $state.showVideo = !$state?.showVideo;
+        }}
       >
-    </thead>
-    <tbody>
-      {#each videos as video}
-        <tr>
-          <td>
-            <button
-              on:click={() => {
-                $selectedId = video.id;
-              }}
-            >
-              {video.title}
-            </button>
-          </td>
-          <td>
-            {video.channel}
-          </td>
-        </tr>
-      {/each}
-    </tbody>
-  </table>
-</section>
-<Modal
-  open={$selectedId !== null}
-  on:close={async () => {
-    $showVideo = false;
-    $selectedId = null;
-  }}
->
-  <div class="modal-details">
-    <p>Title:</p>
-    <p>{selectedVideo?.title}</p>
-    <p>Channel name:</p>
-    <p>{selectedVideo?.channel}</p>
-    <button
-      style="text-align: start;"
-      on:click={() => {
-        $showVideo = !$showVideo;
-      }}
-    >
-      {#if $showVideo}
-        Hide video
-      {:else}
-        Show video
-      {/if}
-    </button>
-    <div class="video-zone">
-      {#if $showVideo}
-        <iframe
-          src={selectedVideo?.url}
-          title="YouTube video player"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-        />
-      {/if}
+        {#if $state?.showVideo}
+          Hide video
+        {:else}
+          Show video
+        {/if}
+      </button>
+      <div class="video-zone">
+        {#if $state?.showVideo}
+          <iframe
+            src={selectedVideo?.url}
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          />
+        {/if}
+      </div>
     </div>
-  </div>
-</Modal>
+  </Modal>
+{/if}
 
 <style>
   table,
