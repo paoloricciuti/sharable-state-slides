@@ -544,3 +544,16 @@ const params = queryParameters({
 layout: image
 image: /coding.gif
 ---
+
+---
+
+# Thanks for your time
+
+<div>You can find all the code for the examples and the slides at<h1 class="my-5"><logos-github-icon class="bg-white rounded-full mr-3" /><a href="https://github.com/paoloricciuti/sharable-state-slides">paoloricciuti/sharable-state-slides</a></h1></div>
+
+<div>or a live slideshow <h1 class="my-5"><logos-netlify class="mr-3" /><a href="https://sharable-state-slides.netlify.app">https://sharable-state-slides.netlify.app</a></h1></div>
+
+---
+layout: image
+image: /bow.gif
+---
