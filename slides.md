@@ -335,6 +335,7 @@ The easiest way to read an WRITE to the query params
 - <logos-svelte-icon /> Reactive
 - <twemoji-man-technologist /> Dev friendly
 - <logos-typescript-icon /> Built with Typescript in mind
+- <twemoji-pinching-hand /> Teeny tiny less than 1kb bundle
 
 ---
 
