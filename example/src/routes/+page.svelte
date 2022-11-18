@@ -1,45 +1,50 @@
 <script lang="ts">
   import Modal from "../lib/components/Modal.svelte";
   import type { PageData } from "./$types";
+  import { ssp, queryParam } from "sveltekit-search-params";
 
   export let data: PageData;
-  let search = "";
-  let selectedId: number | null = null;
-  let showVideo = false;
-  let sort: string = "title";
+
+  let search = queryParam("search");
+  let selectedId = queryParam("selectedId", ssp.number());
+  let showVideo = queryParam("showVideo", ssp.boolean());
+  let sort = queryParam("title");
   $: videos = data.videos
-    .filter((video) => video.title.toLowerCase().includes(search.toLowerCase()))
+    .filter((video) =>
+      video.title.toLowerCase().includes($search?.toLowerCase() ?? "")
+    )
     .sort((videoA, videoB) => {
-      const [key, desc] = sort.split(":");
+      const [key, desc] = $sort?.split(":") ?? "title";
       if (key === "title" || key === "channel") {
         return videoA[key].localeCompare(videoB[key]) * (!!desc ? -1 : 1);
       }
       return 0;
     });
+  $: selectedVideo = videos.find((video) => video.id === $selectedId);
 </script>
 
 <h1>Awesome Svelte videos!</h1>
 
 <section>
-  <input bind:value={search} type="search" placeholder="search..." />
+  <input bind:value={$search} type="search" placeholder="search..." />
   <table>
     <thead>
       <th
         ><button
           on:click={() => {
-            if (sort.startsWith("title")) {
-              if (sort === "title") {
-                sort = "title:desc";
+            if ($sort?.startsWith("title")) {
+              if ($sort === "title") {
+                $sort = "title:desc";
               } else {
-                sort = "title";
+                $sort = "title";
               }
             } else {
-              sort = "title";
+              $sort = "title";
             }
           }}
           >Title
-          {#if sort.startsWith("title")}
-            {#if sort === "title"}
+          {#if $sort?.startsWith("title")}
+            {#if $sort === "title"}
               🔼
             {:else}
               🔽
@@ -50,19 +55,19 @@
       <th
         ><button
           on:click={() => {
-            if (sort.startsWith("channel")) {
-              if (sort === "channel") {
-                sort = "channel:desc";
+            if ($sort?.startsWith("channel")) {
+              if ($sort === "channel") {
+                $sort = "channel:desc";
               } else {
-                sort = "channel";
+                $sort = "channel";
               }
             } else {
-              sort = "channel";
+              $sort = "channel";
             }
           }}
           >Channel
-          {#if sort.startsWith("channel")}
-            {#if sort === "channel"}
+          {#if $sort?.startsWith("channel")}
+            {#if $sort === "channel"}
               🔼
             {:else}
               🔽
@@ -77,7 +82,7 @@
           <td>
             <button
               on:click={() => {
-                selectedId = video.id;
+                $selectedId = video.id;
               }}
             >
               {video.title}
@@ -92,42 +97,41 @@
   </table>
 </section>
 <Modal
-  open={selectedId !== null}
-  on:close={() => {
-    showVideo = false;
-    selectedId = null;
+  open={$selectedId !== null}
+  on:close={async () => {
+    $showVideo = false;
+    $selectedId = null;
   }}
 >
-  {#if selectedId !== null && videos[selectedId]}
-    <div class="modal-details">
-      <p>Title:</p>
-      <p>{videos[selectedId].title}</p>
-      <p>Channel:</p>
-      <p>{videos[selectedId].channel}</p>
-      <button
-        on:click={() => {
-          showVideo = !showVideo;
-        }}
-      >
-        {#if showVideo}
-          Hide video
-        {:else}
-          Show video
-        {/if}
-      </button>
-      <div class="video-zone">
-        {#if showVideo}
-          <iframe
-            src={videos[selectedId].url}
-            title="YouTube video player"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          />
-        {/if}
-      </div>
+  <div class="modal-details">
+    <p>Title:</p>
+    <p>{selectedVideo?.title}</p>
+    <p>Channel name:</p>
+    <p>{selectedVideo?.channel}</p>
+    <button
+      style="text-align: start;"
+      on:click={() => {
+        $showVideo = !$showVideo;
+      }}
+    >
+      {#if $showVideo}
+        Hide video
+      {:else}
+        Show video
+      {/if}
+    </button>
+    <div class="video-zone">
+      {#if $showVideo}
+        <iframe
+          src={selectedVideo?.url}
+          title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        />
+      {/if}
     </div>
-  {/if}
+  </div>
 </Modal>
 
 <style>
