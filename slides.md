@@ -382,7 +382,7 @@ Username: {$username}
 ```typescript
 <script lang="ts">
 import { queryParam } from "sveltekit-search-params";
-//username is of type number
+//count is of type number
 const count = queryParam("count", {
     encode: (value: number) => value.toString(),
     decode: (value: string | null) => value ? parseInt(value) : null,
