@@ -102,7 +102,7 @@
   <div class="modal-details">
     <p>Title:</p>
     <p>{selectedVideo?.title}</p>
-    <p>Channel:</p>
+    <p>Channel name:</p>
     <p>{selectedVideo?.channel}</p>
     <button
       on:click={() => {
