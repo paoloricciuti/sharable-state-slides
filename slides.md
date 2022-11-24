@@ -28,7 +28,7 @@ defaults:
 <div class="grid gap-8">
     <img src="/me.jpg" alt="photo of Paolo Ricciuti, the author" class="rounded-full ring ring-white ring-6">
     <div class="text-center">
-        <logos-twitter /> @paoloricciuti | <logos-github-icon class="bg-white rounded-full"/> @paoloricciuti <span v-click>|<br /><logos-mastodon-icon/> @paoloricciuti@frontend.social</span>
+        <logos-twitter /> @paoloricciuti | <logos-github-icon class="bg-white rounded-full"/> @paoloricciuti <span v-click>|<br /><logos-mastodon-icon/> @paoloricciuti@front-end.social</span>
     </div>
 </div>
 </div>
